@@ -5,6 +5,8 @@ import { useSearchParams } from 'react-router-dom';
 import { setCategories, setProducts } from '../redux/actions';
 import ProductCard from './ProductCard';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify'; // Import Toastify components
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -32,6 +34,9 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      // Show loading toast
+      const loadingToast = toast.loading('Loading products...');
+
       try {
         let url = `https://dummyjson.com/products`;
         if (searchQuery) {
@@ -40,11 +45,15 @@ const HomePage = () => {
         if (selectedCategory) {
           url = `https://dummyjson.com/products/category/${selectedCategory}?limit=${limit}&skip=${(page - 1) * limit}`;
         }
+
         const { data } = await axios.get(url);
         dispatch(setProducts(data.products));
         setTotalProducts(data.total);
       } catch (error) {
         console.error('Error fetching products:', error);
+        toast.error('Failed to load products. Please try again.'); // Show error toast
+      } finally {
+        toast.dismiss(loadingToast); // Dismiss loading toast
       }
     };
     fetchProducts();
@@ -119,7 +128,6 @@ const HomePage = () => {
         )}
       </div>
       
-
       {selectedCategory && totalPages > 1 && (
         <div className="flex justify-center items-center mt-6">
           <button
@@ -139,6 +147,7 @@ const HomePage = () => {
           </button>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

@@ -43,6 +43,7 @@ const ProductPage = () => {
                   src={image}
                   alt={`${product.title} image ${index + 1}`}
                   className="rounded-lg w-full h-auto object-cover shadow-lg"
+                  loading="lazy" 
                 />
               </div>
             ))}
